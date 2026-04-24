@@ -1,8 +1,10 @@
+import { Carousel } from "../Components/Carousel"
+
 export const Home =()=>{
 
     return(
         <div>
-           <h1>hwy  </h1>
+        <Carousel/>
         </div>
     )
 }
