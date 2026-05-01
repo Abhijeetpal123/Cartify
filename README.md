@@ -1,6 +1,6 @@
 # 🛒 Cartify
 
-A modern e-commerce web application built with React, featuring real-time geolocation, user authentication, and a clean shopping experience.
+A modern e-commerce web application built with React, featuring a product carousel, shimmer loading, category filters, real-time geolocation, global state management, and user authentication.
 
 ---
 
@@ -8,8 +8,10 @@ A modern e-commerce web application built with React, featuring real-time geoloc
 
 - **React** – UI library
 - **React Router DOM** – Client-side routing
-- **Clerk** – Authentication (Sign In / Sign Up / User management) Clerk is a ready made authentication service or web apps. It handles  evrything related to  user login  so you don't  have to build it form  scratch.
-- **Axios** – HTTP requests Axios is a popular javascript library used to make http request (like fetching data from an API or sending data to a server  ) 
+- **Clerk** – Authentication (Sign In / Sign Up / User management)
+- **Axios** – HTTP requests
+- **Swiper.js** – Carousel / slider
+- **Context API** – Global state management
 - **Lucide React** – Icons
 - **React Icons** – Additional icon sets
 - **Tailwind CSS** – Utility-first styling
@@ -21,14 +23,21 @@ A modern e-commerce web application built with React, featuring real-time geoloc
 
 ```
 src/
-├── App.jsx              # Root component with routing and layout
-├── main.jsx             # Entry point with ClerkProvider
-├── index.css            # Global styles
+├── App.jsx                      # Root component with routing and layout
+├── main.jsx                     # Entry point with ClerkProvider
+├── index.css                    # Global styles
 ├── Components/
-│   └── Navbar.jsx       # Navigation bar with location + auth
+│   ├── Navbar.jsx               # Navigation bar with location + auth
+│   ├── Carousel.jsx             # Hero product carousel
+│   ├── ProductCard.jsx          # Single product card UI
+│   ├── FilterSection.jsx        # Sidebar category filter buttons
+│   ├── Category.jsx             # Top horizontal category pills
+│   └── Shimmer.jsx              # Shimmer loading skeleton
+├── Context/
+│   └── DataContext.jsx          # Global product data state + API fetch
 └── Pages/
     ├── Home.jsx
-    ├── Product.jsx
+    ├── Product.jsx              # Product listing with filters + shimmer
     ├── Cart.jsx
     ├── About.jsx
     └── Contact.jsx
@@ -38,11 +47,111 @@ src/
 
 ## ✨ Features
 
+- **🎠 Product Carousel** – Auto-sliding hero banner showing top 5 products with title, description, image and Shop Now button
+- **✨ Shimmer Loading** – Animated skeleton cards shown while products are being fetched
+- **🗂️ Category Filter** – Sidebar filter to browse All, Electronics, Men's Clothing, Women's Clothing, and Jewelery
+- **🌐 Global State (Context API)** – Product data is fetched once and shared across all components
 - **🔐 Authentication** – Sign in / Sign up via Clerk with conditional UI rendering
-- **📍 Geolocation** – Detects user's current location using the browser's Geolocation API and reverse-geocodes it using OpenStreetMap's Nominatim service
-- **🧭 Navigation** – Active-state highlighted nav links using React Router's `NavLink`
+- **📍 Geolocation** – Detects user's current location and reverse-geocodes it using OpenStreetMap
+- **🧭 Navigation** – Active-state highlighted nav links using React Router's NavLink
 - **🛍️ Cart** – Cart icon with item count badge in the navbar
-- **📦 Pages** – Home, Products, Cart, Contact, and About
+
+---
+
+## 🎠 Carousel Component
+
+The `Carousel` component uses **Swiper.js** to display a looping hero banner of the first 5 products.
+
+```jsx
+import { Carousel } from "./Components/Carousel";
+```
+
+**Features:**
+- Infinite loop sliding
+- Navigation arrows
+- Responsive layout (stacked on mobile, side-by-side on desktop)
+- Product image, title, description and Shop Now button
+
+---
+
+## ✨ Shimmer Component
+
+Displays animated placeholder cards while products load.
+
+```jsx
+import { Shimmer } from "./Components/Shimmer";
+
+<Shimmer count={12} />
+```
+
+- Uses Tailwind's `animate-pulse` for smooth animation
+- Matches the exact layout of `ProductCard` for a seamless transition
+
+---
+
+## 🗂️ Filter Section
+
+Sidebar category filter with active state highlighting.
+
+```jsx
+import { FilterSection } from "./Components/FilterSection";
+
+<FilterSection
+  activeCategory={activeCategory}
+  setActiveCategory={setActiveCategory}
+/>
+```
+
+**Available Categories:**
+- All
+- Electronics
+- Men's Clothing
+- Women's Clothing
+- Jewelery
+
+---
+
+## 🃏 Product Card
+
+Displays individual product with image, title, price and Add to Cart button.
+
+```jsx
+import { ProductCard } from "./Components/ProductCard";
+
+<ProductCard product={product} />
+```
+
+---
+
+## 🌐 Data Context
+
+The `DataContext` provides global access to product data across the entire app.
+
+### Setup
+
+Wrap your app with `DataProvider` in `main.jsx`:
+
+```jsx
+import { DataProvider } from "./Context/DataContext";
+
+<DataProvider>
+  <App />
+</DataProvider>
+```
+
+### Usage in any component
+
+```jsx
+import { getData } from "../Context/DataContext";
+
+const { data, fetchAllProduct } = getData();
+```
+
+### API Used
+
+```
+https://api.escuelajs.co/api/v1/products?limit=200
+```
 
 ---
 
@@ -50,14 +159,14 @@ src/
 
 ### Prerequisites
 
-- Node.js ≥ 18
-- A [Clerk](https://clerk.com) account and publishable key
+- Node.js >= 18
+- A Clerk account and publishable key
 
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/cartify.git
-cd cartify
+git clone https://github.com/Abhijeetpal123/Cartify.git
+cd Cartify
 npm install
 ```
 
@@ -91,32 +200,14 @@ The app will be available at `http://localhost:5173`.
 
 ---
 
-## 📍 Location Detection
-
-On load, the app automatically requests the user's geolocation. If granted, it reverse-geocodes the coordinates using:
-
-```
-https://nominatim.openstreetmap.org/reverse?lat=...&lon=...&format=json
-```
-
-The city and state are then displayed in the navbar. Users can also manually trigger location detection via the dropdown.
-
----
-
-## 🔒 Authentication
-
-Authentication is handled by [Clerk](https://clerk.com). The `<Show>` component conditionally renders:
-
-- **Signed out** → `<SignInButton />`
-- **Signed in** → `<UserButton />` (avatar + account menu)
-
----
-
 ## 📦 Dependencies
 
 ```bash
-npm install react-router-dom @clerk/react axios lucide-react react-icons
+npm install react-router-dom @clerk/react axios swiper lucide-react react-icons
 ```
 
 ---
 
+## 📄 License
+
+This project is for personal/portfolio use.

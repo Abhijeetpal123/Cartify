@@ -4,10 +4,11 @@ import { Navigation } from "swiper/modules";
 import { SwiperSlide, Swiper } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
+import { Category } from "./Category";
 
 export const Carousel = () => {
   const { data, fetchAllProduct } = useContext(DataContext);
-  console.log(data);
+  // console.log(data);
   useEffect(() => {
     fetchAllProduct();
   }, []);
@@ -20,8 +21,8 @@ export const Carousel = () => {
         // spaceBetween={50}
         loop={true}
         slidesPerView={1}
-        onSlideChange={() => console.log("slide change")}
-        onSwiper={(swiper) => console.log(swiper)}
+        // onSlideChange={() => console.log("slide change")}
+        // onSwiper={(swiper) => console.log(swiper)}
       >
         {data?.slice(0, 5)?.map((item, index) => {
           return (
@@ -42,14 +43,14 @@ export const Carousel = () => {
                     <p className="text-gray-300 line-clamp-1">
                       {item.description}
                     </p>
-                    <button className="bg-red-500 hover:bg-red-600 px-7 py-3 rounded-xl font-semibold shadow-lg transition ">
+                    <button className="bg-red-500 hover:bg-red-600 px-7 py-3 rounded-xl font-semibold shadow-lg transition cursor-pointer">
                       Shop Now
                     </button>
                   </div>
                   {/* Right Image  */}
                   <div className="w-full md:w-100">
                     <img
-                      src={item.images?.[0]}
+                      src={item.image}
                       alt={item.title}
                       className="w-[350px] md:w-[450px] h-[300px] object-contain drop-shadow-2xl"
                     />
@@ -60,6 +61,7 @@ export const Carousel = () => {
           );
         })}
       </Swiper>
+      <Category/>
     </div>
   );
 };
